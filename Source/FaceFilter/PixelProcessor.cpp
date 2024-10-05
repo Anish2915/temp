@@ -94,7 +94,8 @@ void APixelProcessor::BeginPlay()
     SetupUDP(); 
 
     //ReceiveUDPData();
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APixelProcessor::ReceiveUDPData, 0.02f,true);
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APixelProcessor::ReceiveUDPData, 0.01f,true);
+
     //SetupTCP();
     //SetupWebSocket();
 
@@ -175,6 +176,7 @@ void APixelProcessor::SendFromWebSocket()
     }
     else
     {
+        UE_LOG(LogTemp, Warning, TEXT("test"));
         UE_LOG(LogTemp, Error, TEXT("WebSocket is not connected or invalid"));
     }
 
@@ -449,7 +451,7 @@ void APixelProcessor::SetupUDP()
     bIsConnected = true;
 
 
-    CachedTexture = UTexture2D::CreateTransient(250, 350, PF_R8G8B8A8); 
+    CachedTexture = UTexture2D::CreateTransient(128, 128, PF_R8G8B8A8); 
     PlatformData = CachedTexture->GetPlatformData();   
     MyWidgetInstance->SetMyTexture(CachedTexture);    
     //IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper")); 
@@ -520,7 +522,7 @@ void APixelProcessor::CreateAndSetTextureAtRuntime()
             }
             else
             {
-                UE_LOG(LogTemp, Warning, TEXT("Failed to decompress PNG data."));
+                UE_LOG(LogTemp, Warning, TEXT("Failed to decompress JPEG data."));
             }
         }
         else
@@ -551,23 +553,23 @@ void APixelProcessor::ProcessUDP()
     int32 Height = RenderTarget->SizeY;
 
     ////////////// only capture face 
-    int32 StartX = 500; //750
-    int32 StartY = 100; // 150
-    int32 RegionWidth = 250; // 375 
-    int32 RegionHeight = 350;  // 525
+    int32 StartX = 440; //660
+    int32 StartY = 200; // 300   
+    int32 RegionWidth = 128; // 192
+    int32 RegionHeight = 128;  // 192 
 
-    TArray<FColor> RegionData; 
-    for (int32 y = StartY; y < StartY + RegionHeight; ++y) 
+    TArray<FColor> RegionData;  
+    for (int32 y = StartY; y < StartY + RegionHeight; ++y)  
     {
-        for (int32 x = StartX; x < StartX + RegionWidth; ++x) 
+        for (int32 x = StartX; x < StartX + RegionWidth; ++x)  
         {
-            RegionData.Add(PixelData[y * Width + x]); 
+            RegionData.Add(PixelData[y * Width + x]);  
         }
     }
 
-    if (RegionData.Num() == 0) 
+    if (RegionData.Num() == 0)  
     {
-        UE_LOG(LogTemp, Warning, TEXT("No pixel data extracted from the specified region!")); 
+        UE_LOG(LogTemp, Warning, TEXT("No pixel data extracted from the specified region!"));  
         return;
     }
 
@@ -614,7 +616,7 @@ void APixelProcessor::ProcessUDP()
 
 
     }
-    FPlatformProcess::Sleep(0.001f);
+    //FPlatformProcess::Sleep(0.001f);
 
     const FString EndMarker = TEXT("END_OF_MESSAGE");
     TArray<uint8> EndMarkerData;
